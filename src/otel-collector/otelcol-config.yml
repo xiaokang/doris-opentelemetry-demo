@@ -90,15 +90,41 @@ exporters:
     endpoint: "http://prometheus:9090/api/v1/otlp"
     tls:
       insecure: true
-  opensearch:
-    logs_index: otel
-    http:
-      endpoint: "http://opensearch:9200"
-      tls:
-        insecure: true
+  doris:
+    endpoint: "http://doris:8040"
+    database: otel
+    username: admin
+    password:
+    table:
+      logs: otel_logs
+      traces: otel_traces
+      metrics: otel_metrics
+    create_schema: true
+    mysql_endpoint: "doris:9030"
+    history_days: 30
+    create_history_days: 0
+    replication_num: 1
+    timezone: Asia/Shanghai
+    timeout: 60s
+    #log_response: true
+    #label_prefix: otel
+    headers:
+      # load_to_single_tablet: "true"
+      max_filter_ratio: "1"
+    sending_queue:
+      enabled: true
+      num_consumers: 10
+      queue_size: 1000
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
 
 processors:
   batch:
+    send_batch_size: 10000
+    timeout: 10s
   memory_limiter:
     check_interval: 5s
     limit_percentage: 80
@@ -120,15 +146,15 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, transform, batch]
-      exporters: [otlp, debug, spanmetrics]
+      exporters: [otlp, debug, spanmetrics, doris]
     metrics:
       receivers: [hostmetrics, docker_stats, httpcheck/frontend-proxy, otlp, redis, spanmetrics]
       processors: [memory_limiter, batch]
-      exporters: [otlphttp/prometheus, debug]
+      exporters: [doris, otlphttp/prometheus, debug]
     logs:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [opensearch, debug]
+      exporters: [doris, debug]
   telemetry:
     metrics:
       level: detailed

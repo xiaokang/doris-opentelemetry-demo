@@ -10,7 +10,7 @@ x-default-logging: &logging
 
 networks:
   default:
-    name: opentelemetry-demo
+    name: doris-opentelemetry-demo
     driver: bridge
 
 services:
@@ -328,8 +328,8 @@ services:
           memory: 65M
     restart: unless-stopped
     ports:
-      - "${ENVOY_PORT}:${ENVOY_PORT}"
-      - 10000:10000
+      - "${ENVOY_PORT}"
+      - 10000
     environment:
       - FRONTEND_PORT
       - FRONTEND_HOST
@@ -351,6 +351,7 @@ services:
       - FLAGD_PORT
       - FLAGD_UI_HOST
       - FLAGD_UI_PORT
+      - DORIS_SERVICE_HOST
     depends_on:
       frontend:
         condition: service_started
@@ -361,6 +362,8 @@ services:
       grafana:
         condition: service_started
       flagd-ui:
+        condition: service_started
+      doris:
         condition: service_started
     dns_search: ""
 
@@ -722,7 +725,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 120M
+          memory: 1024M
     restart: unless-stopped
     environment:
       - "GF_INSTALL_PLUGINS=grafana-opensearch-datasource"
@@ -730,7 +733,7 @@ services:
       - ./src/grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./src/grafana/provisioning/:/etc/grafana/provisioning/
     ports:
-      - "${GRAFANA_PORT}"
+      - "33000:${GRAFANA_PORT}"
     logging: *logging
 
   # OpenTelemetry Collector
@@ -755,8 +758,8 @@ services:
     depends_on:
       jaeger:
         condition: service_started
-      opensearch:
-        condition: service_healthy
+      doris:
+        condition: service_started
     logging: *logging
     environment:
       - ENVOY_PORT
@@ -788,41 +791,20 @@ services:
           memory: 300M
     restart: unless-stopped
     ports:
-      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+      - "${PROMETHEUS_PORT}"
     logging: *logging
 
-  # OpenSearch
-  opensearch:
-    image: ${OPENSEARCH_IMAGE}
-    container_name: opensearch
-    deploy:
-      resources:
-        limits:
-          memory: 1.1G
+  # Doris
+  doris:
+    image: ${DORIS_IMAGE}
+    container_name: doris
     restart: unless-stopped
-    environment:
-      - cluster.name=demo-cluster
-      - node.name=demo-node
-      - bootstrap.memory_lock=true
-      - discovery.type=single-node
-      - OPENSEARCH_JAVA_OPTS=-Xms300m -Xmx300m
-      - DISABLE_INSTALL_DEMO_CONFIG=true
-      - DISABLE_SECURITY_PLUGIN=true
-      # Workaround on OSX for https://bugs.openjdk.org/browse/JDK-8345296
-      - _JAVA_OPTIONS
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
+    privileged: true
     ports:
-      - "9200"
-    healthcheck:
-      test: curl -s http://localhost:9200/_cluster/health | grep -E '"status":"(green|yellow)"'
-      start_period: 10s
-      interval: 5s
-      timeout: 10s
-      retries: 10
+      - "${DORIS_SERVICE_FE_HTTP_PORT}"
+      - "${DORIS_SERVICE_FE_MYSQL_PORT}"
+      - "${DORIS_SERVICE_BE_HTTP_PORT}"
     logging: *logging
+    environment:
+      - JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
+

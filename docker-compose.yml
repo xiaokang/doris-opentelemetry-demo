@@ -806,5 +806,5 @@ services:
       - "${DORIS_SERVICE_BE_HTTP_PORT}"
     logging: *logging
     environment:
-      - JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
+      - SKIP_CHECK_ULIMIT=true
 

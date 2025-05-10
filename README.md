@@ -1,5 +1,5 @@
 <!-- markdownlint-disable-next-line -->
-# <img src="https://opentelemetry.io/img/logos/opentelemetry-logo-nav.png" alt="OTel logo" width="45"> OpenTelemetry Demo
+# <img src="https://opentelemetry.io/img/logos/opentelemetry-logo-nav.png" alt="OTel logo" width="45"> OpenTelemetry Demo for Apache Doris
 
 [![Slack](https://img.shields.io/badge/slack-@cncf/otel/demo-brightgreen.svg?logo=slack)](https://cloud-native.slack.com/archives/C03B4CWV4DA)
 [![Version](https://img.shields.io/github/v/release/open-telemetry/opentelemetry-demo?color=blueviolet)](https://github.com/open-telemetry/opentelemetry-demo/releases)
@@ -58,7 +58,8 @@ keeping it up to date for you.
 
 |                           |                |                                  |
 |---------------------------|----------------|----------------------------------|
-| [AlibabaCloud LogService] | [Google Cloud] |  [Oracle]                        |
+| [AlibabaCloud LogService] | [Elastic]      |  [OpenSearch]                    |
+| [Apache Doris]            | [Google Cloud] |  [Oracle]                        |
 | [AppDynamics]             | [Grafana Labs] |  [Sentry]                        |
 | [Aspecto]                 | [Guance]       |  [ServiceNow Cloud Observability]|
 | [Axiom]                   | [Honeycomb.io] |  [SigNoz]                        |
@@ -68,7 +69,6 @@ keeping it up to date for you.
 | [Dash0]                   | [Liatrio]      |  [Teletrace]                     |
 | [Datadog]                 | [Logz.io]      |  [Tracetest]                     |
 | [Dynatrace]               | [New Relic]    |  [Uptrace]                       |
-| [Elastic]                 | [OpenSearch]   |                                  |
 
 ## Contributing
 
@@ -111,6 +111,7 @@ Emeritus:
 
 [AlibabaCloud LogService]: https://github.com/aliyun-sls/opentelemetry-demo
 [AppDynamics]: https://community.appdynamics.com/t5/Knowledge-Base/How-to-observe-OpenTelemetry-demo-app-in-Splunk-AppDynamics/ta-p/58584
+[Apache Doris]: https://github.com/apache/doris-opentelemetry-demo
 [Aspecto]: https://github.com/aspecto-io/opentelemetry-demo
 [Axiom]: https://play.axiom.co/axiom-play-qf1k/dashboards/otel.traces.otel-demo-traces
 [Axoflow]: https://axoflow.com/opentelemetry-support-in-more-detail-in-axosyslog-and-syslog-ng/
